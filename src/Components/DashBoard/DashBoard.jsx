@@ -24,7 +24,6 @@ const DashBoard = () => {
     }
 
     const handleAddTaskDetails = (taskDetails, totalTasks) => {
-        console.log(taskDetails, "detials")
         let userTasks = [];
         if (editTaskDetails) {
             userTasks = totalTasks.map(taskObj => {
