@@ -10,8 +10,7 @@ const SignUpModal = () => {
 
     const handleSubmitFormData = (event) => {
         event.preventDefault();
-        console.log(signUpDetails, "state")
-        dispatch(getUserProfileRequest(signUpDetails));
+        dispatch(getUserProfileRequest({ signUpDetails }, "SIGNUP"));
         dispatch(setSignUpModal(false))
     }
 

@@ -1,3 +1,4 @@
+import React from "react";
 import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
 import InputWithLabel from "./InputWithLabel";
 
@@ -12,7 +13,7 @@ const TaskModal = (props) => {
         <Modal isOpen={true} className="">
             <ModalHeader toggle={closeModal}>{modalHeading}</ModalHeader>
             <ModalBody>
-                {contentArr.map((contentObj, index) => <>
+                {contentArr.map((contentObj, index) => <React.Fragment key={`${contentObj.fieldName}_${index}`}>
                     {
                         contentObj.contentType === "inputBox" && <InputWithLabel
                             inputType={contentObj.inputType}
@@ -34,7 +35,7 @@ const TaskModal = (props) => {
                             {contentObj.label}
                         </Button>
                     }
-                </>)}
+                </React.Fragment>)}
             </ModalBody>
         </Modal>
     </>

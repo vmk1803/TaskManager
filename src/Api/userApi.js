@@ -1,12 +1,11 @@
 import commonFetch from "./commonFetch"
 import localStorage from "./localStorage"
 
-export const getUserProfileApi = async (signUpDetails) => {
-    console.log(signUpDetails, "details")
+export const getUserProfileApi = async ({ userAuthDetails, url }) => {
     try {
-        const response = await commonFetch(`http://localhost:3003/user/signup`,
+        const response = await commonFetch(url,
             "POST",
-            { signUpDetails },
+            userAuthDetails,
             new Headers({
                 "content-type": "application/json"
             }),

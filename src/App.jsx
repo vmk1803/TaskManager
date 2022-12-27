@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import localStorage from './Api/localStorage';
 import './App.css'
 import HomePage from './Components/HomePage/HomePage';
@@ -11,7 +11,7 @@ function App() {
 
   useEffect(() => {
     const trackingData = localStorage.getItemFromLocalStorage("trackingData");
-    dispatch(checkRefreshToken(trackingData.accessToken))
+    trackingData?.accessToken && dispatch(checkRefreshToken(trackingData.accessToken))
   }, [])
 
   return (

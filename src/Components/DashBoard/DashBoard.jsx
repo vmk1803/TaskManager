@@ -1,35 +1,63 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Button, Table } from "reactstrap";
 import { setUserTasksRequest } from "../../Redux/actions/userAction";
 import TaskModal from "../common/TaskModal";
 import "./DashBoard.css"
+import { v4 as uuidv4 } from 'uuid';
 
 const tasks = []
 
 
 const DashBoard = () => {
     const [isAddTaskModalOpen, setAddTaskModalOpen] = useState(false);
-    const [taskDetails, addTaskDetails] = useState({});
+    const [taskDetails, setTaskDetails] = useState({});
     const [editTaskDetails, setEditTaskDetails] = useState(false);
     const dispatch = useDispatch();
+    const userTasks = useSelector(state => state.userProfile?.userInfo?.userTasks) || [];
 
     const handleOnChangeFun = (inputObj) => {
-        addTaskDetails({
+        setTaskDetails({
             ...taskDetails,
             ...inputObj
         })
     }
 
-    const handleAddTaskDetails = (taskDetails) => {
-        dispatch(setUserTasksRequest(taskDetails));
+    const handleAddTaskDetails = (taskDetails, totalTasks) => {
+        console.log(taskDetails, "detials")
+        let userTasks = [];
+        if (editTaskDetails) {
+            userTasks = totalTasks.map(taskObj => {
+                if (taskObj.id === taskDetails.id) {
+                    return taskDetails
+                }
+                return taskObj;
+            })
+        } else {
+            userTasks = [...totalTasks, { ...taskDetails, id: uuidv4() }]
+        }
+        dispatch(setUserTasksRequest(userTasks));
+        setAddTaskModalOpen(false);
+        setEditTaskDetails(false);
+        setTaskDetails({});
+    }
+
+    const handleEditTaskDetails = (selectedTaskObj) => {
+        setAddTaskModalOpen(true);
+        setEditTaskDetails(true);
+        setTaskDetails(selectedTaskObj);
+    }
+
+    const handleDeleteTask = (selectedTaskId, existedTasks) => {
+        const userTasks = existedTasks.filter(taskObj => taskObj.id !== selectedTaskId);
+        dispatch(setUserTasksRequest(userTasks));
     }
 
     return <div className="dash-board-container">
         <h2>DashBoard</h2>
         <div className="dash-board-body-container position-relative">
-            {tasks.length > 0 ? <div>
-                <Table dark={true}>
+            {userTasks.length > 0 ? <div>
+                <Table hover={true} responsive={true}>
                     <thead>
                         <tr>
                             <th>Task Name</th>
@@ -38,10 +66,17 @@ const DashBoard = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {tasks.map((taskObj, Index) => <tr scope="row" key={`${taskObj.taskName}_${Index}`}>
+                        {userTasks.map((taskObj, Index) => <tr className={taskObj.status === "DONE" && "table-dark"} scope="row" key={`${taskObj.taskName}_${Index}`}>
                             <td>{taskObj.taskName}</td>
-                            <td>{taskObj.status}</td>
+                            <td className={taskObj.status === "DONE" && "text-decoration-line-through"}>{taskObj.status}</td>
                             <td>{taskObj.priority}</td>
+                            {taskObj.status !== "DONE" && <td>
+                                <i className="fa-solid fas fa-pen" onClick={() => handleEditTaskDetails(taskObj)}></i>
+                                <i className="fa-solid fas fa-trash ms-2" onClick={() => handleDeleteTask(taskObj.id, userTasks)}></i>
+                            </td>}
+                            {taskObj.status === "DONE" && <td className="text-decoration-none">
+                                Clean Trash
+                            </td>}
                         </tr>)}
                     </tbody>
                 </Table>
@@ -90,7 +125,7 @@ const DashBoard = () => {
                 contentType: "button",
                 className: "",
                 label: "Add",
-                onClick: () => handleAddTaskDetails(taskDetails)
+                onClick: () => handleAddTaskDetails(taskDetails, userTasks)
             }]}
         />}
     </div>

@@ -9,12 +9,16 @@ function* getUserProfileRequest(action) {
         const {
             error = false,
             body = {}
-        } = yield call(getUserProfileApi, action.payload.signUpDetails)
+        } = yield call(getUserProfileApi, {
+            userAuthDetails: action.payload.userAuthDetails,
+            url: action.payload.authType === "LOGIN" ? `http://localhost:3003/user/login` : "http://localhost:3003/user/signup"
+        })
         if (!error) {
             // set data to localstorage
             yield localStorage.setItemToLocalStorage("trackingData", { accessToken: body.accessToken });
             // store userProfile in redux
-            yield put(getUserProfileSuccess(body))
+            yield put(getUserProfileSuccess(body));
+            yield put(setUserType("AUTHENTICATED"))
         }
     } catch (error) {
 
@@ -32,7 +36,8 @@ function* getUserRefreshToken(action) {
     try {
         const response = yield getUserRefreshTokenApi(accessToken);
         if (!response.error) {
-            yield put(getUserProfileSuccess(response.body))
+            yield put(getUserProfileSuccess(response.body));
+            yield put(setUserType(response.message))
         }
     } catch (error) {
         yield put(setUserType(error))

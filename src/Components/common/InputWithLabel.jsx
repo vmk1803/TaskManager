@@ -20,6 +20,7 @@ const InputWithLabel = (props) => {
             placeholder={placeholder}
             onChange={(e) => onChangeFun(e.target.value)}
             name={name}
+            value={value}
         />}
         {inputType === 'dropdown' && <Dropdown className="w-100" isOpen={isDropDownOpen} toggle={() => setDropDownOpen(!isDropDownOpen)}>
             <DropdownToggle className="" caret={true}>{value}</DropdownToggle>
